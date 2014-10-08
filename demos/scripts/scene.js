@@ -2,15 +2,21 @@ var demo = new CANNON.Demo();
 
 demo.addScene("quadcopter", function() {
     var world = setupWorld(demo);
-    var shape = new CANNON.Box(new CANNON.Vec3(10, 1, 0.5));
+    var shape1 = new CANNON.Box(new CANNON.Vec3(10, 1, 0.5));
+    var shape2 = new CANNON.Box(new CANNON.Vec3(1, 10, 0.5));
+    var shape3 = new CANNON.Box(new CANNON.Vec3(5, 5, 0.5));
     var mass = 10;
     var body = new CANNON.Body({
         mass: mass
     });
     body.position.set(0, 0, 6);
-    body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), Math.PI / 32);
+    body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 0, 0), Math.PI / 32);
 
-    body.addShape(shape);
+    body.addShape(shape1, new CANNON.Vec3(-15, 0, 0));
+    body.addShape(shape1, new CANNON.Vec3(15, 0, 0));
+    body.addShape(shape2, new CANNON.Vec3(0, -15, 0));
+    body.addShape(shape2, new CANNON.Vec3(0, 15, 0));
+    body.addShape(shape3, new CANNON.Vec3(0, 0, 0));
     demo.addVisual(body);
 });
 
