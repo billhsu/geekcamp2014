@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Demo</title>
+    <meta charset="utf-8">
+    <style>
+    body {
+        margin: 0px;
+        background-color: #000000;
+        overflow: hidden;
+    }
+    #info {
+        position: absolute;
+        width: 100%;
+        color: #ffffff;
+        padding: 5px;
+        font-family: Monospace;
+        font-size: 13px;
+        font-weight: bold;
+        text-align: center;
+        z-index: 1;
+    }
+    </style>
+</head>
+
+<body>
+    <script src="scripts/three.min.js"></script>
+    <script src="scripts/cubeTexture.js"></script>
+
+    <div id="container"></div>
+    <div id="info">
+        WebSocket Server:
+        <input type="text" id="server" value="ws://192.168.1.6:8080">
+        <button onclick="connect()">Connect</button>
+        <button onclick="disconnect()">Disconnect</button>
+        <div id="connStatus" />
+    </div>
+    <script>
+    var rotX = 0.0,
+        rotY = 0.0,
+        rotZ = 0.0;
+
+    function connect() {
+        initWebSocket();
+    }
+
+    function disconnect() {
+        websocket.close();
+    }
+
+    function initWebSocket() {
+        var wsUri = document.getElementById("server").value;
+        websocket = new WebSocket(wsUri);
+        websocket.onopen = function(evt) {
+            onOpen(evt)
+        };
+        websocket.onclose = function(evt) {
+            onClose(evt)
+        };
+        websocket.onmessage = function(evt) {
+            onMessage(evt)
+        };
+        websocket.onerror = function(evt) {
+            onError(evt)
+        };
+    }
+
+    function onOpen(evt) {
+        document.getElementById("connStatus").innerHTML = "Connected";
+    }
+
+    function onClose(evt) {
+        document.getElementById("connStatus").innerHTML = "Disconnected";
+    }
+
+    function onMessage(evt) {
+        var data = evt.data.split(" ");
+        if (data[0] == 'ROTN:') {
+            rotX = parseFloat(data[1]);
+            rotY = parseFloat(data[2]);
+            rotZ = parseFloat(data[3]);
+        }
+    }
+
+    function onError(evt) {
+        document.getElementById("connStatus").innerHTML = '<span style="color: red;">ERROR:</span> ' + evt.data;
+    }
+
+    function doSend(message) {
+        websocket.send(message);
+    }
+    </script>
+
+    <script src="scripts/IMU.js"></script>
+</body>
+
+</html>
