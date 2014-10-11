@@ -22,6 +22,7 @@
         z-index: 1;
     }
     </style>
+    <script src="scripts/smoothie.js"></script>
 </head>
 
 <body>
@@ -35,7 +36,31 @@
         <button onclick="connect()">Connect</button>
         <button onclick="disconnect()">Disconnect</button>
         <div id="connStatus" />
+        <br/>
+        <canvas id="chart" width="400" height="100"></canvas>
+
     </div>
+    <script>
+    var random = new TimeSeries();
+    setInterval(function() {
+        random.append(new Date().getTime(), Math.random() * 10000);
+    }, 500);
+
+    function createTimeline() {
+        var chart = new SmoothieChart({
+            interpolation: 'linear'
+        });
+        chart.addTimeSeries(random, {
+            strokeStyle: 'rgba(0, 255, 0, 1)',
+            fillStyle: 'rgba(0, 255, 0, 0.2)',
+            lineWidth: 4
+        });
+        chart.streamTo(document.getElementById("chart"), 500);
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        createTimeline();
+    }, false);
+    </script>
     <script>
     var rotX = 0.0,
         rotY = 0.0,
