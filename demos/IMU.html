@@ -11,27 +11,29 @@
         padding: 0;
         height: 100%;
         background-color: #c5c5c5;
-        overflow: hidden;
     }
     #container {
         min-height: 100%;
         position: relative;
     }
     #serverConfig {
-        width: 100%;
-        color: #ffffff;
+        color: #000000;
         font-family: Monospace;
-        font-size: 13px;
+        font-size: 15px;
         font-weight: bold;
         text-align: center;
-        z-index: 1;
+        padding: 10px;
+    }
+    #webGLView {
+        padding-bottom: 60px;
     }
     #charts {
-        clear: both;
-        min-height: 100px;
+        height: 150px;
         position: absolute;
         bottom: 0;
+        left: 0;
         width: 100%;
+        text-align: center;
         background: #111111;
     }
     </style>
@@ -49,8 +51,9 @@
             <input type="text" id="server" value="ws://192.168.1.6:8080">
             <button onclick="connect()">Connect</button>
             <button onclick="disconnect()">Disconnect</button>
-            <div id="connStatus" />
+            <div id="connStatus"></div>
         </div>
+        <div id="webGLView"></div>
         <div id="charts">
             <canvas id="rotXchart" width="400" height="150"></canvas>
         </div>

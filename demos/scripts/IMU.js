@@ -29,7 +29,7 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     renderer.domElement.style.position = 'absolute';
-    document.getElementById('container').appendChild(renderer.domElement);
+    document.getElementById('webGLView').appendChild(renderer.domElement);
     window.addEventListener('resize', onWindowResize, false);
 
 }
