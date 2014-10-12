@@ -20,7 +20,6 @@
     #serverConfig {
         width: 100%;
         color: #ffffff;
-        padding: 5px;
         font-family: Monospace;
         font-size: 13px;
         font-weight: bold;
@@ -28,11 +27,11 @@
         z-index: 1;
     }
     #charts {
+        clear: both;
+        min-height: 100px;
         position: absolute;
         bottom: 0;
         width: 100%;
-        /* Height of the footer */
-        
         background: #111111;
     }
     </style>
@@ -53,7 +52,7 @@
             <div id="connStatus" />
         </div>
         <div id="charts">
-            <canvas id="rotXchart" width="400" height="150" style="z-index: 2;"></canvas>
+            <canvas id="rotXchart" width="400" height="150"></canvas>
         </div>
     </div>
 
