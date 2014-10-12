@@ -25,8 +25,7 @@ demo.addScene("quadcopter", function() {
         mass: mass
     });
     body.position.set(0, 0, 7);
-    body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 0, 0), Math.PI / 32);
-
+    // body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 0, 0), Math.PI / 32);
     body.addShape(shape1, new CANNON.Vec3(-(length_wing + size_board), 0, 0));
     body.addShape(shape1, new CANNON.Vec3((length_wing + size_board), 0, 0));
     body.addShape(shape2, new CANNON.Vec3(0, -(length_wing + size_board), 0));
@@ -41,20 +40,23 @@ demo.addScene("quadcopter", function() {
     bodyRef.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 0, 0), Math.PI / 32);
     world.add(bodyRef);
 
-    // constraints.push(new CANNON.HingeConstraint(body, bodyRef, {
-    //     pivotA: new CANNON.Vec3(),
-    //     axisA: new CANNON.Vec3(0, 1, 0),
-    //     pivotB: new CANNON.Vec3(),
-    //     axisB: new CANNON.Vec3(0, 0, 1)
-    // }));
-
     constraints.push(new CANNON.PointToPointConstraint(body, new CANNON.Vec3(0, 5, 7), groundBody, new CANNON.Vec3(0, 5, 0)));
     constraints.push(new CANNON.PointToPointConstraint(body, new CANNON.Vec3(0, -5, 7), groundBody, new CANNON.Vec3(0, -5, 0)));
     for (var i = 0; i < constraints.length; i++)
         world.addConstraint(constraints[i]);
+    setTimeout(function() {
+        setInterval(function() {
+            var eular = new CANNON.Vec3(0, 0, 0);
+            body.quaternion.toEuler(eular);
+            var angle = eular.y;
+            if (angle < 0) angle = -(Math.PI + angle);
+            else angle = Math.PI - angle;
+            angle = angle * 180 / Math.PI;
+            console.log(angle);
+            body.applyImpulse(new CANNON.Vec3(0, 0, -angle), new CANNON.Vec3(4, 0, 0));
+        }, 100);
+    }, 6000);
 
-    body.applyImpulse(new CANNON.Vec3(0, 0, 10), new CANNON.Vec3(4, 0, 0));
-    //demo.bodies[1].applyForce(new CANNON.Vec3(0, 10, 19000), new CANNON.Vec3(-4, 0, 0));
 
 });
 
