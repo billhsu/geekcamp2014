@@ -130,10 +130,6 @@
 
     function connect() {
         initWebSocket();
-        gyroRotX = 0.0;
-        gyroRotY = 0.0;
-        gyroRotZ = 0.0;
-
     }
 
     function disconnect() {
@@ -159,14 +155,13 @@
 
     function onOpen(evt) {
         document.getElementById("connStatus").innerHTML = "Connected";
+        roll = 0;
+        pitch = 0;
     }
 
     function onClose(evt) {
         document.getElementById("connStatus").innerHTML = "Disconnected";
     }
-    var gyroRotX = 0.0,
-        gyroRotY = 0.0,
-        gyroRotZ = 0.0;
 
     var lastGyro;
     var roll = 0.0,
@@ -201,16 +196,16 @@
 
         }
         var nowGyro = getTimestamp();
-        gyroRotX = gyroX * (nowGyro - lastGyro) / 1000.0 * Math.PI / 2;
-        gyroRotY = gyroY * (nowGyro - lastGyro) / 1000.0 * Math.PI / 2;
-        gyroRotZ = gyroZ * (nowGyro - lastGyro) / 1000.0 * Math.PI / 2;
+        gyroRotXDelta = gyroX * (nowGyro - lastGyro) / 1000.0 * Math.PI / 2;
+        gyroRotYDelta = gyroY * (nowGyro - lastGyro) / 1000.0 * Math.PI / 2;
+        gyroRotZDelta = gyroZ * (nowGyro - lastGyro) / 1000.0 * Math.PI / 2;
         lastGyro = nowGyro;
-        pitch = pitch + gyroRotX;
-        roll = roll - gyroRotY;
+        pitch = pitch + gyroRotXDelta;
+        roll = roll - gyroRotYDelta;
         var pitchAcc = Math.atan2(acclY, acclZ);
         var rollAcc = Math.atan2(acclX, Math.sqrt(acclY * acclY + acclZ * acclZ));
-        pitch = pitch * 0.90 + pitchAcc * 0.10;
-        roll = roll * 0.90 + rollAcc * 0.10;
+        pitch = pitch * 0.98 + pitchAcc * 0.02;
+        roll = roll * 0.98 + rollAcc * 0.02;
 
         rotZfusionData.append(new Date().getTime(), -roll);
 
