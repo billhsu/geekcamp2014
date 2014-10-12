@@ -9,13 +9,12 @@ function init() {
     scene = new THREE.Scene();
 
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-    camera.position.z = 500;
+    camera.position.z = 400;
 
     var cubeTexture = new THREE.Texture(cubeTextureData);
     cubeTexture.wrapS = THREE.RepeatWrapping;
     cubeTexture.wrapT = THREE.RepeatWrapping;
     cubeTexture.needsUpdate = true;
-
     var material = new THREE.MeshBasicMaterial({
         map: cubeTexture
     });
