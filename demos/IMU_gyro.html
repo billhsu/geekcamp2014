@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Demo IMU - GYRO Only</title>
+    <meta charset="utf-8">
+    <style>
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background-color: #c5c5c5;
+    }
+    #container {
+        min-height: 100%;
+        position: relative;
+    }
+    #serverConfig {
+        color: #000000;
+        font-family: Monospace;
+        font-size: 15px;
+        font-weight: bold;
+        text-align: center;
+    }
+    #webGLView {
+        padding-bottom: 60px;
+    }
+    #charts {
+        min-height: 150px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        background: #111111;
+        color: #ffffff;
+    }
+    </style>
+    <script src="scripts/smoothie.js"></script>
+</head>
+
+<body>
+    <script src="scripts/three.min.js"></script>
+    <script src="scripts/cubeTexture.js"></script>
+
+
+    <div id="container">
+        <div id="serverConfig">
+            WebSocket Server:
+            <input type="text" id="server" value="ws://192.168.43.1:8080">
+            <button onclick="connect()">Connect</button>
+            <button onclick="disconnect()">Disconnect</button>
+            <div id="connStatus">Disconnected</div>
+        </div>
+        <div id="webGLView"></div>
+        <div id="charts">
+            Real
+            <canvas id="rotZchart" width="500" height="200"></canvas>
+            Gyro
+            <canvas id="rotZGyrochart" width="500" height="200"></canvas>
+        </div>
+    </div>
+
+    <script>
+    var rotZData = new TimeSeries();
+    var rotZGyroData = new TimeSeries();
+
+    function createTimeline() {
+        var chart_padding = 0.2;
+        var rotZchart = new SmoothieChart({
+            interpolation: 'linear',
+            maxValue: Math.PI / 2 + chart_padding,
+            minValue: -Math.PI / 2 - chart_padding,
+            millisPerPixel: 40,
+            timestampFormatter: SmoothieChart.timeFormatter
+        });
+        rotZchart.addTimeSeries(rotZData, {
+            strokeStyle: 'rgba(0, 255, 0, 1)',
+            fillStyle: 'rgba(0, 255, 0, 0.2)',
+            lineWidth: 1
+        });
+        rotZchart.streamTo(document.getElementById("rotZchart"), 0);
+
+        var rotZGyrochart = new SmoothieChart({
+            interpolation: 'linear',
+            maxValue: Math.PI / 2 + chart_padding,
+            minValue: -Math.PI / 2 - chart_padding,
+            millisPerPixel: 40,
+            timestampFormatter: SmoothieChart.timeFormatter
+        });
+        rotZGyrochart.addTimeSeries(rotZGyroData, {
+            strokeStyle: 'rgba(0, 255, 0, 1)',
+            fillStyle: 'rgba(0, 255, 0, 0.2)',
+            lineWidth: 1
+        });
+        rotZGyrochart.streamTo(document.getElementById("rotZGyrochart"), 0);
+
+        if (window.performance.now) {
+            console.log("Using high performance timer");
+            getTimestamp = function() {
+                return window.performance.now();
+            };
+        } else {
+            if (window.performance.webkitNow) {
+                console.log("Using webkit high performance timer");
+                getTimestamp = function() {
+                    return window.performance.webkitNow();
+                };
+            } else {
+                console.log("Using low performance timer");
+                getTimestamp = function() {
+                    return new Date().getTime();
+                };
+            }
+        }
+        lastGyro = getTimestamp();
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        createTimeline();
+    }, false);
+    </script>
+    <script>
+    var rotX = 0.0,
+        rotY = 0.0,
+        rotZ = 0.0;
+
+    var rotAcclX = 0.0,
+        rotAcclY = 0.0,
+        rotAcclZ = 0.0;
+
+    function connect() {
+        initWebSocket();
+        gyroRotX = 0.0;
+        gyroRotY = 0.0;
+        gyroRotZ = 0.0;
+
+    }
+
+    function disconnect() {
+        websocket.close();
+    }
+
+    function initWebSocket() {
+        var wsUri = document.getElementById("server").value;
+        websocket = new WebSocket(wsUri);
+        websocket.onopen = function(evt) {
+            onOpen(evt)
+        };
+        websocket.onclose = function(evt) {
+            onClose(evt)
+        };
+        websocket.onmessage = function(evt) {
+            onMessage(evt)
+        };
+        websocket.onerror = function(evt) {
+            onError(evt)
+        };
+    }
+
+    function onOpen(evt) {
+        document.getElementById("connStatus").innerHTML = "Connected";
+    }
+
+    function onClose(evt) {
+        document.getElementById("connStatus").innerHTML = "Disconnected";
+    }
+    var gyroRotX = 0.0,
+        gyroRotY = 0.0,
+        gyroRotZ = 0.0;
+
+    var lastGyro;
+
+    function onMessage(evt) {
+        var pack = evt.data.split(";");
+        for (var i = 0; i < pack.length; ++i) {
+            var data = pack[i].split(" ");
+            if (data[0] == 'ROTN:') {
+                rotX = parseFloat(data[1]);
+                rotY = parseFloat(data[2]);
+                rotZ = parseFloat(data[3]);
+                rotZData.append(new Date().getTime(), rotZ);
+            }
+            if (data[0] == 'GYRO:') {
+                var gyroX = parseFloat(data[1]);
+                var gyroY = parseFloat(data[2]);
+                var gyroZ = parseFloat(data[3]);
+
+                var nowGyro = getTimestamp();
+                gyroRotX = gyroRotX + gyroX * (nowGyro - lastGyro) / 1000.0 * Math.PI / 2;
+                gyroRotY = gyroRotY + gyroY * (nowGyro - lastGyro) / 1000.0 * Math.PI / 2;
+                gyroRotZ = gyroRotZ + gyroZ * (nowGyro - lastGyro) / 1000.0 * Math.PI / 2;
+                lastGyro = nowGyro;
+                rotZGyroData.append(new Date().getTime(), -gyroRotZ);
+            }
+
+        }
+
+    }
+
+    function onError(evt) {
+        document.getElementById("connStatus").innerHTML = '<span style="color: red;">ERROR:</span> ' + evt.data;
+    }
+
+    function doSend(message) {
+        websocket.send(message);
+    }
+    </script>
+
+    <script src="scripts/IMU_gyro.js"></script>
+</body>
+
+</html>
