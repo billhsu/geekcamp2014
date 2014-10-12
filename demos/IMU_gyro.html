@@ -38,12 +38,11 @@
     }
     </style>
     <script src="scripts/smoothie.js"></script>
+    <script src="scripts/three.min.js"></script>
+    <script src="scripts/cubeTexture.js"></script>
 </head>
 
 <body>
-    <script src="scripts/three.min.js"></script>
-    <script src="scripts/cubeTexture.js"></script>
-
 
     <div id="container">
         <div id="serverConfig">
@@ -51,6 +50,7 @@
             <input type="text" id="server" value="ws://192.168.43.1:8080">
             <button onclick="connect()">Connect</button>
             <button onclick="disconnect()">Disconnect</button>
+            <button onclick="resetGyro()">Reset Gyro</button>
             <div id="connStatus">Disconnected</div>
         </div>
         <div id="webGLView"></div>
@@ -134,11 +134,16 @@
         gyroRotX = 0.0;
         gyroRotY = 0.0;
         gyroRotZ = 0.0;
-
     }
 
     function disconnect() {
         websocket.close();
+    }
+
+    function resetGyro() {
+        gyroRotX = 0.0;
+        gyroRotY = 0.0;
+        gyroRotZ = 0.0;
     }
 
     function initWebSocket() {
@@ -191,7 +196,7 @@
                 gyroRotY = gyroRotY + gyroY * (nowGyro - lastGyro) / 1000.0 * Math.PI / 2;
                 gyroRotZ = gyroRotZ + gyroZ * (nowGyro - lastGyro) / 1000.0 * Math.PI / 2;
                 lastGyro = nowGyro;
-                rotZGyroData.append(new Date().getTime(), -gyroRotZ);
+                rotZGyroData.append(new Date().getTime(), -gyroRotY);
             }
 
         }

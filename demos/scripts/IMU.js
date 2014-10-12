@@ -8,7 +8,7 @@ function init() {
 
     scene = new THREE.Scene();
 
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / (window.innerHeight - 200), 1, 10000);
     camera.position.z = 400;
 
     var cubeTexture = new THREE.Texture(cubeTextureData);
@@ -25,7 +25,7 @@ function init() {
     scene.add(mesh);
 
     renderer = new THREE.CanvasRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(window.innerWidth, (window.innerHeight - 200));
 
     renderer.domElement.style.position = 'absolute';
     document.getElementById('webGLView').appendChild(renderer.domElement);
@@ -35,10 +35,10 @@ function init() {
 
 function onWindowResize() {
 
-    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.aspect = window.innerWidth / (window.innerHeight - 200);
     camera.updateProjectionMatrix();
 
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(window.innerWidth, (window.innerHeight - 200));
 
 }
 
