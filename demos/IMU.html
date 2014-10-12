@@ -5,13 +5,19 @@
     <title>Demo</title>
     <meta charset="utf-8">
     <style>
+    html,
     body {
-        margin: 0px;
-        background-color: #000000;
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background-color: #c5c5c5;
         overflow: hidden;
     }
-    #info {
-        position: absolute;
+    #container {
+        min-height: 100%;
+        position: relative;
+    }
+    #serverConfig {
         width: 100%;
         color: #ffffff;
         padding: 5px;
@@ -21,6 +27,14 @@
         text-align: center;
         z-index: 1;
     }
+    #charts {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        /* Height of the footer */
+        
+        background: #111111;
+    }
     </style>
     <script src="scripts/smoothie.js"></script>
 </head>
@@ -29,33 +43,36 @@
     <script src="scripts/three.min.js"></script>
     <script src="scripts/cubeTexture.js"></script>
 
-    <div id="container"></div>
-    <div id="info">
-        WebSocket Server:
-        <input type="text" id="server" value="ws://192.168.1.6:8080">
-        <button onclick="connect()">Connect</button>
-        <button onclick="disconnect()">Disconnect</button>
-        <div id="connStatus" />
-        <br/>
-        <canvas id="chart" width="400" height="100"></canvas>
 
+    <div id="container">
+        <div id="serverConfig">
+            WebSocket Server:
+            <input type="text" id="server" value="ws://192.168.1.6:8080">
+            <button onclick="connect()">Connect</button>
+            <button onclick="disconnect()">Disconnect</button>
+            <div id="connStatus" />
+        </div>
+        <div id="charts">
+            <canvas id="rotXchart" width="400" height="150" style="z-index: 2;"></canvas>
+        </div>
     </div>
+
     <script>
-    var random = new TimeSeries();
-    setInterval(function() {
-        random.append(new Date().getTime(), Math.random() * 10000);
-    }, 500);
+    var rotYData = new TimeSeries();
 
     function createTimeline() {
-        var chart = new SmoothieChart({
-            interpolation: 'linear'
+        var rotXchart = new SmoothieChart({
+            interpolation: 'linear',
+            maxValue: Math.PI / 2,
+            minValue: -Math.PI / 2,
+            millisPerPixel: 40
         });
-        chart.addTimeSeries(random, {
+        rotXchart.addTimeSeries(rotYData, {
             strokeStyle: 'rgba(0, 255, 0, 1)',
             fillStyle: 'rgba(0, 255, 0, 0.2)',
-            lineWidth: 4
+            lineWidth: 1
         });
-        chart.streamTo(document.getElementById("chart"), 500);
+        rotXchart.streamTo(document.getElementById("rotXchart"), 0);
     }
     document.addEventListener('DOMContentLoaded', function() {
         createTimeline();
@@ -100,12 +117,17 @@
     }
 
     function onMessage(evt) {
-        var data = evt.data.split(" ");
-        if (data[0] == 'ROTN:') {
-            rotX = parseFloat(data[1]);
-            rotY = parseFloat(data[2]);
-            rotZ = parseFloat(data[3]);
+        var pack = evt.data.split(";");
+        for (var i = 0; i < pack.length; ++i) {
+            var data = pack[i].split(" ");
+            if (data[0] == 'ROTN:') {
+                rotX = parseFloat(data[1]);
+                rotY = parseFloat(data[2]);
+                rotZ = parseFloat(data[3]);
+                rotYData.append(new Date().getTime(), rotZ);
+            }
         }
+
     }
 
     function onError(evt) {
