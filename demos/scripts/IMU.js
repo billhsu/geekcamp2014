@@ -25,6 +25,7 @@ function init() {
     scene.add(mesh);
 
     renderer = new THREE.CanvasRenderer();
+    renderer.setClearColorHex(0xc5c5c5, 1);
     renderer.setSize(window.innerWidth, (window.innerHeight - 200));
 
     renderer.domElement.style.position = 'absolute';

@@ -1,7 +1,7 @@
 // Shipeng Xu 2014
 var demo = new CANNON.Demo();
 
-demo.addScene("quadcopter", function() {
+demo.addScene("quadcopter - P", function() {
     var world = demo.getWorld();
     world.gravity.set(0, 0, -9.8);
     world.broadphase = new CANNON.NaiveBroadphase();

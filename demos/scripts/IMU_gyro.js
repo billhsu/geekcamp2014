@@ -30,6 +30,7 @@ function init() {
     gyroMesh.position.set(125, 0, 0);
 
     renderer = new THREE.CanvasRenderer();
+    renderer.setClearColorHex(0xc5c5c5, 1);
     renderer.setSize(window.innerWidth, (window.innerHeight - 200));
 
     renderer.domElement.style.position = 'absolute';
