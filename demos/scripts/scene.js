@@ -205,7 +205,7 @@ demo.addScene("D", function() {
             var error = 0 - angle;
             var nowTime = getTimestamp();
             var dt = nowTime - lastTime;
-            var derivative = (error - lastError) / dt;
+            var derivative = (error - lastError) / (dt + 0.0001);
             lastError = error;
             lastTime = nowTime;
             body.applyImpulse(new CANNON.Vec3(0, 0, 500 * derivative), new CANNON.Vec3(4, 0, 0));

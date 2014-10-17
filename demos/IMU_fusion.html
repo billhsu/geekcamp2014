@@ -22,12 +22,13 @@
         font-size: 15px;
         font-weight: bold;
         text-align: center;
+        height: 45px;
     }
     #webGLView {
-        padding-bottom: 60px;
+        position: absolute; top: 45px; bottom:  80%;
     }
     #charts {
-        min-height: 150px;
+        height: 20%;
         position: absolute;
         bottom: 0;
         left: 0;
@@ -62,6 +63,11 @@
     </div>
 
     <script>
+    document.getElementById('rotZchart').height = document.getElementById('charts').clientHeight;
+    document.getElementById('rotZfusionchart').height = document.getElementById('charts').clientHeight;
+    document.getElementById('rotZchart').width = document.getElementById('charts').clientWidth * 0.4;
+    document.getElementById('rotZfusionchart').width = document.getElementById('charts').clientWidth * 0.4;
+
     var rotZData = new TimeSeries();
     var rotZfusionData = new TimeSeries();
 

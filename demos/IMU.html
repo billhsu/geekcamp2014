@@ -22,19 +22,22 @@
         font-size: 15px;
         font-weight: bold;
         text-align: center;
+        height: 45px;
     }
     #webGLView {
-        padding-bottom: 60px;
+        position: absolute; top: 45px; bottom:  80%;
     }
     #charts {
-        min-height: 150px;
+        height: 20%;
         position: absolute;
         bottom: 0;
         left: 0;
         width: 100%;
         text-align: center;
         background: #111111;
+        color: #ffffff;
     }
+
     </style>
     <script src="scripts/smoothie.js"></script>
     <script src="scripts/three.min.js"></script>
@@ -58,6 +61,8 @@
     </div>
 
     <script>
+    document.getElementById('rotZchart').height = document.getElementById('charts').clientHeight;
+    document.getElementById('rotZchart').width = document.getElementById('charts').clientWidth * 0.8;
     var rotZData = new TimeSeries();
     var rotZAcclData = new TimeSeries();
     var rotZGyroData = new TimeSeries();
