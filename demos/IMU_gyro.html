@@ -201,7 +201,7 @@
                 gyroRotY = gyroRotY + gyroY * (nowGyro - lastGyro) / 1000.0 * Math.PI / 2;
                 gyroRotZ = gyroRotZ + gyroZ * (nowGyro - lastGyro) / 1000.0 * Math.PI / 2;
                 lastGyro = nowGyro;
-                rotZGyroData.append(new Date().getTime(), -gyroRotY);
+                rotZGyroData.append(new Date().getTime(), gyroRotY);
             }
 
         }
